@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -34,6 +35,7 @@ public class NavMeshCharacter : MonoBehaviour, IDamageable, INavMeshMovable, IDi
     {
         _agent = GetComponent<NavMeshAgent>();
         _agent.updateRotation = false;
+        _agent.autoTraverseOffMeshLink = false;
 
         _mover = new NavMeshAgentMover(_agent, _moveSpeed);
         _rotator = new DirectionalRotator(transform, _rotationSpeed);
@@ -63,7 +65,10 @@ public class NavMeshCharacter : MonoBehaviour, IDamageable, INavMeshMovable, IDi
     public bool TryGetPath (Vector3 targetPosition, NavMeshPath pathToTarget)
         => NavMeshUtils.TryGetPath(_agent, targetPosition, pathToTarget);
 
-    public void Jump(OffMeshLinkData offMeshLinkData) => _jumper.Jump(offMeshLinkData);
+    public void Jump(OffMeshLinkData offMeshLinkData)
+    {
+        _jumper.Jump(offMeshLinkData);
+    }
 
     public bool IsOnNavMeshLink(out OffMeshLinkData offMeshLinkData) 
     {
