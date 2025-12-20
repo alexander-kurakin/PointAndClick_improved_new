@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 public class PlayerMousePointRotatableController : Controller
 {
@@ -13,6 +14,12 @@ public class PlayerMousePointRotatableController : Controller
 
     protected override void UpdateLogic(float deltaTime)
     {
+        if (_movable.IsOnNavMeshLink(out OffMeshLinkData offMeshLinkData))
+        {
+            _rotatable.SetRotationDirection(offMeshLinkData.endPos - offMeshLinkData.startPos);
+            return;
+        }
+
         _rotatable.SetRotationDirection(_movable.CurrentVelocity);
     }
 }

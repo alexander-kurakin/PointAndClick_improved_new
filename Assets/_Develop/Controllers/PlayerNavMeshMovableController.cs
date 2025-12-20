@@ -16,6 +16,14 @@ public class PlayerNavMeshMovableController : Controller
 
     protected override void UpdateLogic(float deltaTime)
     {
+        if (_movable.IsOnNavMeshLink(out OffMeshLinkData offMeshLinkData))
+        {
+            if (_movable.InJumpProcess == false)
+                _movable.Jump(offMeshLinkData);
+
+            return;
+        }
+
         _mouseHitPosition = _movable.MouseHitPosition;
 
         if (_mouseClickInput.MouseClickButtonPressed) 

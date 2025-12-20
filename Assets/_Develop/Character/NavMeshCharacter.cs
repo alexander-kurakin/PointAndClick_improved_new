@@ -8,14 +8,17 @@ public class NavMeshCharacter : MonoBehaviour, IDamageable, INavMeshMovable, IDi
     [SerializeField] private float _rayShootDistance = 100f;
     [SerializeField] private int _maxHealth = 100;
     [SerializeField] private int _injuryThreshold = 30;
+    [SerializeField] private float _jumpSpeed;
 
     [SerializeField] private LayerMask _groundLayerMask;
     [SerializeField] private NavMeshCharacterView _view;
-        
+    [SerializeField] private AnimationCurve _jumpCurve;
+
     private bool _isDead = false;
 
     private Health _health;
     private NavMeshAgent _agent;
+    private NavMeshAgentJumper _jumper;
     private MouseRayScanner _mouseRayScanner;
     private NavMeshAgentMover _mover;
     private DirectionalRotator _rotator;
@@ -23,11 +26,10 @@ public class NavMeshCharacter : MonoBehaviour, IDamageable, INavMeshMovable, IDi
 
     public Vector3 CurrentVelocity => _mover.CurrentVelocity;
     public Quaternion CurrentRotation => _rotator.CurrentRotation;
-
     public Vector3 CurrentTarget => _targetDestination;
-
     public Vector3 CurrentPosition => transform.position;
-    
+    public bool InJumpProcess => _jumper.InProcess;
+
     private void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
@@ -35,6 +37,7 @@ public class NavMeshCharacter : MonoBehaviour, IDamageable, INavMeshMovable, IDi
 
         _mover = new NavMeshAgentMover(_agent, _moveSpeed);
         _rotator = new DirectionalRotator(transform, _rotationSpeed);
+        _jumper = new NavMeshAgentJumper(_jumpSpeed, _agent, this, _jumpCurve);
 
         _health = new Health(_maxHealth);
 
@@ -59,6 +62,20 @@ public class NavMeshCharacter : MonoBehaviour, IDamageable, INavMeshMovable, IDi
         => _rotator.SetInputDirection(inputDirection);
     public bool TryGetPath (Vector3 targetPosition, NavMeshPath pathToTarget)
         => NavMeshUtils.TryGetPath(_agent, targetPosition, pathToTarget);
+
+    public void Jump(OffMeshLinkData offMeshLinkData) => _jumper.Jump(offMeshLinkData);
+
+    public bool IsOnNavMeshLink(out OffMeshLinkData offMeshLinkData) 
+    {
+        if (_agent.isOnOffMeshLink) 
+        {
+            offMeshLinkData = _agent.currentOffMeshLinkData;
+            return true;
+        }
+
+        offMeshLinkData = default(OffMeshLinkData);
+        return false;
+    }
 
     public void TakeDamage(int damage)
     {

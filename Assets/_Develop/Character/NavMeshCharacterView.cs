@@ -5,6 +5,7 @@ public class NavMeshCharacterView : MonoBehaviour
 {
     private const string InjuredLayerName = "Injured";
     private readonly int IsRunningKey = Animator.StringToHash("IsRunning");
+    private readonly int InJumpProcessKey = Animator.StringToHash("InJumpProcess");
     private readonly int IsDeadKey = Animator.StringToHash("IsDead");
     private readonly int TakeDamageTriggerKey = Animator.StringToHash("TakeDamage");
 
@@ -21,6 +22,7 @@ public class NavMeshCharacterView : MonoBehaviour
     private void Update()
     {
         ShowHP();
+        ShowJumping();
 
         if (_character.IsDead())
         {
@@ -55,7 +57,12 @@ public class NavMeshCharacterView : MonoBehaviour
     {
         float currentHP = (float) _character.GetCurrentHealth() / 100;
         _slider.value = currentHP;
-    }    
+    }
+
+    private void ShowJumping()
+    { 
+        _animator.SetBool(InJumpProcessKey, _character.InJumpProcess);
+    }
 
     private void StopRunning()
     {

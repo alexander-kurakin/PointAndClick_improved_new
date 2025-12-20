@@ -11,4 +11,8 @@ public interface INavMeshMovable
     void StopMove();
     void ResumeMove();
 
+    bool InJumpProcess { get; }
+    bool IsOnNavMeshLink(out OffMeshLinkData offMeshLinkData);
+    void Jump(OffMeshLinkData offMeshLinkData);
+
 }
