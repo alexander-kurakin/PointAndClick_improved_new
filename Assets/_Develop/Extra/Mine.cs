@@ -15,12 +15,6 @@ public class Mine : MonoBehaviour
     {
         _visual = GetComponent<MineVisual>();
     }
-
-    private void Update()
-    {
-    
-    }
-
     private void OnTriggerEnter(Collider other)
     {
         if (_isTriggered == false && other.TryGetComponent<IDamageable>(out IDamageable iDamageable))

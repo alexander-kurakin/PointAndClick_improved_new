@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class NavMeshCharacter : MonoBehaviour, IDamageable, INavMeshMovable, IDirectionalRotatable
+public class NavMeshCharacter : MonoBehaviour, IDamageable, INavMeshMovable, IDirectionalRotatable, IHealable
 {
     [SerializeField] private float _moveSpeed = 5;
     [SerializeField] private float _rotationSpeed = 900;
@@ -104,6 +104,17 @@ public class NavMeshCharacter : MonoBehaviour, IDamageable, INavMeshMovable, IDi
     public int GetCurrentHealth() => _health.CurrentHealth;
     public bool IsDead() => _isDead;
     public bool IsInjured() => _health.CurrentHealth <= _injuryThreshold;
+
+    public void Heal(int healAmount)
+    {
+        if (healAmount < 0)
+        { 
+            Debug.LogError($"Heal amount {healAmount}");
+            return;
+        }
+
+        _health.IncreaseHealth(healAmount);
+    }
 
     public Vector3 MouseHitPosition => _mouseRayScanner.MouseHitPosition;
 
