@@ -9,11 +9,11 @@ public class Mine : MonoBehaviour
 
     private bool _isTriggered = false;
 
-    private MineVisual _visual;
+    private MineView _view;
 
     private void Awake()
     {
-        _visual = GetComponent<MineVisual>();
+        _view = GetComponent<MineView>();
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -31,7 +31,7 @@ public class Mine : MonoBehaviour
                 iDamageable.TakeDamage(_explosionDamage);
         }
 
-        _visual.AnimateDetonate();
+        _view.AnimateDetonate();
         Destroy(gameObject);
     }
 

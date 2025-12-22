@@ -1,3 +1,5 @@
+using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,17 +12,25 @@ public class NavMeshCharacterView : MonoBehaviour
     private readonly int TakeDamageTriggerKey = Animator.StringToHash("TakeDamage");
 
     [SerializeField] private float _minDistanceToFlag = 0.5f;
+    [SerializeField] private float _footstepRate = 0.33f;
 
     [SerializeField] private Animator _animator;
     [SerializeField] private NavMeshCharacter _character;
     [SerializeField] private GameObject _targetMarkerPrefab;
     [SerializeField] private Slider _slider;
 
+    [SerializeField] private AudioSource _footstepSource;
+    [SerializeField] private AudioClip[] _footstepsArray;
+
     private bool _isInjuredSynchronised = false;
+    private bool _isFootstepPlaying = false;
+    private Coroutine _currentFootstepCoroutine;
     private GameObject _currentTargetMarker;
 
     private void Update()
     {
+
+
         ShowHP();
         ShowJumping();
 
@@ -67,11 +77,34 @@ public class NavMeshCharacterView : MonoBehaviour
     private void StopRunning()
     {
         _animator.SetBool(IsRunningKey, false);
+        _isFootstepPlaying = false;
     }
 
     private void StartRunning()
     {
         _animator.SetBool(IsRunningKey, true);
+        _isFootstepPlaying = true;
+
+        if (_isFootstepPlaying && _currentFootstepCoroutine == null)
+            _currentFootstepCoroutine = StartCoroutine(ProcessFootsteps());
+
+    }
+
+    private void PlayRandomFootstep()
+    {
+        _footstepSource.PlayOneShot(_footstepsArray[Random.Range(0, _footstepsArray.Length)]);
+    }
+
+    private IEnumerator ProcessFootsteps()
+    {
+        while (_isFootstepPlaying)
+        {
+            PlayRandomFootstep();
+
+            yield return new WaitForSeconds(_footstepRate);
+        }
+
+        _currentFootstepCoroutine = null;
     }
 
     private void DrawMarkerAtCurrentTarget()

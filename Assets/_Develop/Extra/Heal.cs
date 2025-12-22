@@ -4,11 +4,11 @@ public class Heal : MonoBehaviour
 {
     [SerializeField] private int _healAmount;
 
-    private HealVisual _visual;
+    private HealView _visual;
 
     private void Awake()
     {
-        _visual = GetComponent<HealVisual>();
+        _visual = GetComponent<HealView>();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -25,5 +25,4 @@ public class Heal : MonoBehaviour
         _visual.AnimateHeal();
         Destroy(gameObject);
     }
-
 }

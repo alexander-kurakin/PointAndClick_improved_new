@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class MineVisual : MonoBehaviour
+public class MineView : MonoBehaviour
 {
     [SerializeField] private GameObject _destroyEffectPrefab;
 
