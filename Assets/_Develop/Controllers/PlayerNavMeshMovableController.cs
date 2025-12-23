@@ -25,7 +25,7 @@ public class PlayerNavMeshMovableController : Controller
             return;
         }
 
-        _mouseHitPosition = _movable.MouseHitPosition;
+        _mouseHitPosition = _mouseClickInput.MousePosition;
 
         if (_mouseClickInput.MouseClickButtonPressed && EventSystem.current.IsPointerOverGameObject() == false) 
             _movable.SetDestination(_mouseHitPosition);
@@ -41,5 +41,4 @@ public class PlayerNavMeshMovableController : Controller
 
         _movable.StopMove();
     }
-
 }

@@ -24,7 +24,6 @@ public class NavMeshCharacter : MonoBehaviour, IDamageable, INavMeshMovable, IDi
     private NavMeshAgent _agent;
     private NavMeshAgentJumper _jumper;
     private AudioMixing _audioMixing;
-    private MouseRayScanner _mouseRayScanner;
     private NavMeshAgentMover _mover;
     private DirectionalRotator _rotator;
     private Timer _deathTimer;
@@ -37,8 +36,6 @@ public class NavMeshCharacter : MonoBehaviour, IDamageable, INavMeshMovable, IDi
     public bool InJumpProcess => _jumper.InProcess;
     public bool MusicEnabled => _audioMixing.MusicEnabled;
     public bool SFXEnabled => _audioMixing.SFXEnabled;
-
-    public Vector3 MouseHitPosition => _mouseRayScanner.MouseHitPosition;
 
     public bool CanMove => _isDead == false;
 
@@ -56,8 +53,6 @@ public class NavMeshCharacter : MonoBehaviour, IDamageable, INavMeshMovable, IDi
 
         _health = new Health(_maxHealth);
 
-        _mouseRayScanner = new MouseRayScanner(_rayShootDistance, _groundLayerMask);
-
         _audioMixing = new AudioMixing(_mixer);
         _audioMixing.Initialize();
 
@@ -67,7 +62,6 @@ public class NavMeshCharacter : MonoBehaviour, IDamageable, INavMeshMovable, IDi
     private void Update()
     {
         _rotator.Update(Time.deltaTime);
-        _mouseRayScanner.Update(Time.deltaTime);
     }
 
     public void SetDestination(Vector3 position) 

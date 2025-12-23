@@ -78,15 +78,6 @@ public class NavMeshCharacterView : MonoBehaviour
         SoundJump();
     }
 
-    private void OnDrawGizmos()
-    {
-        if (Application.isPlaying)
-        {
-            Gizmos.color = Color.blue;
-            Gizmos.DrawSphere(_character.MouseHitPosition, 0.1f);
-        }
-    }
-
     private void SetFloatFor(SkinnedMeshRenderer bodyRenderer, MeshRenderer hatRenderer, string key, float param)
     { 
         bodyRenderer.material.SetFloat(key, param);
