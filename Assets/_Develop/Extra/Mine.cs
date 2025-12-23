@@ -10,6 +10,7 @@ public class Mine : MonoBehaviour
     private bool _isTriggered = false;
 
     private MineView _view;
+    public float MineTriggerTime => _mineTriggerTime;
 
     private void Awake()
     {

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class MouseRayScanner : IMouseRayShooter
 {
@@ -18,7 +19,7 @@ public class MouseRayScanner : IMouseRayShooter
     {
         Ray mousePointRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        if (Physics.Raycast(mousePointRay, out RaycastHit hitInfo, rayShootDistance, groundLayerMask))
+        if (Physics.Raycast(mousePointRay, out RaycastHit hitInfo, rayShootDistance, groundLayerMask) && EventSystem.current.IsPointerOverGameObject() == false)
             _mouseHitPosition = hitInfo.point;
     }
 

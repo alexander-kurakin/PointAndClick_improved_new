@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.EventSystems;
 
 public class PlayerNavMeshMovableController : Controller
 {
@@ -26,7 +27,7 @@ public class PlayerNavMeshMovableController : Controller
 
         _mouseHitPosition = _movable.MouseHitPosition;
 
-        if (_mouseClickInput.MouseClickButtonPressed) 
+        if (_mouseClickInput.MouseClickButtonPressed && EventSystem.current.IsPointerOverGameObject() == false) 
             _movable.SetDestination(_mouseHitPosition);
 
         if (_mouseHitPosition != Vector3.zero && _movable.CanMove)

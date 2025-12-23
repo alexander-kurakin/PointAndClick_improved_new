@@ -1,6 +1,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class HealSpawner : MonoBehaviour
 {
@@ -20,7 +21,7 @@ public class HealSpawner : MonoBehaviour
 
     public void Update()
     {
-        _debugText.text = "_isSpawnerEnabled=" + _isSpawnerEnabled;
+        _debugText.text = "Health Pack Spawn Enabled=" + _isSpawnerEnabled;
 
         if (Input.GetKeyDown(_spawnerKey))
         {
@@ -39,6 +40,8 @@ public class HealSpawner : MonoBehaviour
 
             yield return new WaitForSeconds(_spawnInterval);
         }
+
+        _courotineObject = null;
     }
 
     private void RandomSpawn()
