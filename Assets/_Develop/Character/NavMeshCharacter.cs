@@ -1,44 +1,35 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Audio;
 
 public class NavMeshCharacter : MonoBehaviour, IDamageable, INavMeshMovable, IDirectionalRotatable, IHealable
 {
-    [SerializeField] private float _moveSpeed = 5f;
-    [SerializeField] private float _rotationSpeed = 900;
-    [SerializeField] private float _rayShootDistance = 100f;
-    [SerializeField] private int _maxHealth = 100;
-    [SerializeField] private int _injuryThreshold = 30;
-    [SerializeField] private float _jumpSpeed = 5f;
-    [SerializeField] private float _deathTime = 3f;
-
-    [SerializeField] private LayerMask _groundLayerMask;
-    [SerializeField] private NavMeshCharacterView _view;
-    [SerializeField] private AnimationCurve _jumpCurve;
-    [SerializeField] private AudioMixer _mixer;
-
-    private bool _isDead = false;
-
     private Health _health;
     private NavMeshAgent _agent;
     private NavMeshAgentJumper _jumper;
-    private AudioMixing _audioMixing;
     private NavMeshAgentMover _mover;
     private DirectionalRotator _rotator;
     private Timer _deathTimer;
     private Vector3 _targetDestination;
+
+    private bool _isDead = false;
+
+    [SerializeField] private LayerMask _groundLayerMask;
+    [SerializeField] private NavMeshCharacterView _view;
+    [SerializeField] private AnimationCurve _jumpCurve;
+    
+    [SerializeField] private float _moveSpeed = 5f;
+    [SerializeField] private float _rotationSpeed = 900;
+    [SerializeField] private int _maxHealth = 100;
+    [SerializeField] private int _injuryThreshold = 30;
+    [SerializeField] private float _jumpSpeed = 5f;
+    [SerializeField] private float _deathTime = 3f;
 
     public Vector3 CurrentVelocity => _mover.CurrentVelocity;
     public Quaternion CurrentRotation => _rotator.CurrentRotation;
     public Vector3 CurrentTarget => _targetDestination;
     public Vector3 CurrentPosition => transform.position;
     public bool InJumpProcess => _jumper.InProcess;
-    public bool MusicEnabled => _audioMixing.MusicEnabled;
-    public bool SFXEnabled => _audioMixing.SFXEnabled;
-
     public bool CanMove => _isDead == false;
-
     public float TimeToDie => _deathTimer.TimeLimit;
 
     private void Awake()
@@ -53,9 +44,6 @@ public class NavMeshCharacter : MonoBehaviour, IDamageable, INavMeshMovable, IDi
 
         _health = new Health(_maxHealth);
 
-        _audioMixing = new AudioMixing(_mixer);
-        _audioMixing.Initialize();
-
         _deathTimer = new Timer(this);
     }
 
@@ -69,9 +57,6 @@ public class NavMeshCharacter : MonoBehaviour, IDamageable, INavMeshMovable, IDi
         _targetDestination = position;
         _mover.SetDestination(_targetDestination);
     }
-
-    public void ToggleMusic() => _audioMixing.ToggleMusic();
-    public void ToggleSFX() => _audioMixing.ToggleSFX();
 
     public void StopMove() => _mover.Stop();
     public void ResumeMove() => _mover.Resume();

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Audio;
 
-public class AudioMixing
+public class AudioSettings
 {
     private const string MusicParam = "MusicVolume";
     private const string SFXParam = "SFXVolume";
@@ -18,8 +18,7 @@ public class AudioMixing
     public bool MusicEnabled => _musicEnabled;
     public bool SFXEnabled => _sfxEnabled;
 
-
-    public AudioMixing(AudioMixer audioMixer)
+    public AudioSettings(AudioMixer audioMixer)
     {
         _audioMixer = audioMixer;
     }

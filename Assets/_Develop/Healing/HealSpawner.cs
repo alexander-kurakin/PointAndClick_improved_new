@@ -1,34 +1,30 @@
 using System.Collections;
-using TMPro;
 using UnityEngine;
 
 public class HealSpawner : MonoBehaviour
 {
-    private const KeyCode _spawnerKey = KeyCode.F;
+    private Coroutine _courotineObject;
+    private bool _isSpawnerEnabled = false;
+
+    [SerializeField] private Heal _prefabToSpawn;
+    [SerializeField] private LayerMask _groundLayer;
 
     [SerializeField] private float _spawnInterval = 2f;
     [SerializeField] private float _spawnRadius = 5f;
     [SerializeField] private float _originalYoffset = 50f;
     [SerializeField] private float _groundCheckDistance = 100f;
-
-    [SerializeField] private TMP_Text _debugText;
-    [SerializeField] private GameObject _prefabToSpawn;
-    [SerializeField] private LayerMask _groundLayer;
-
-    private Coroutine _courotineObject;
-    private bool _isSpawnerEnabled = false;
+    
+    public bool SpawnerEnabled => _isSpawnerEnabled;
 
     public void Update()
     {
-        _debugText.text = "Health Pack Spawn Enabled=" + _isSpawnerEnabled;
+        SpawnerStart();
+    }
 
-        if (Input.GetKeyDown(_spawnerKey))
-        {
-            _isSpawnerEnabled = !_isSpawnerEnabled;
-
-            if (_isSpawnerEnabled && _courotineObject == null)
-                _courotineObject = StartCoroutine(ProcessSpawn());
-        }
+    private void SpawnerStart()
+    {
+        if (_isSpawnerEnabled && _courotineObject == null)
+            _courotineObject = StartCoroutine(ProcessSpawn());
     }
 
     private IEnumerator ProcessSpawn()
@@ -52,5 +48,10 @@ public class HealSpawner : MonoBehaviour
 
         if (Physics.Raycast(randomSpawnPoint, Vector3.down, out RaycastHit hitInfo, _groundCheckDistance, _groundLayer))
             Instantiate(_prefabToSpawn, hitInfo.point, Quaternion.identity);
+    }
+
+    public void ToggleSpawner()
+    {
+        _isSpawnerEnabled = !_isSpawnerEnabled;
     }
 }

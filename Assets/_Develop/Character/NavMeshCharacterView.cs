@@ -1,5 +1,4 @@
 using System.Collections;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,43 +13,29 @@ public class NavMeshCharacterView : MonoBehaviour
     private readonly int IsDeadKey = Animator.StringToHash("IsDead");
     private readonly int TakeDamageTriggerKey = Animator.StringToHash("TakeDamage");
 
-    [SerializeField] private float _minDistanceToFlag = 0.5f;
-    [SerializeField] private float _footstepRate = 0.33f;
-    [SerializeField] private float _footstepVolume = 1f;
-    [SerializeField] private float _jumpVolume = 0.5f;
-    [SerializeField] private float _deathTextYoffset = 5f;
+    private GameObject _currentTargetMarker;
+    
+    private bool _isCharacterInjured = false;
+    private bool _isOnDeathEffectTriggered = false;
 
     [SerializeField] private Animator _animator;
     [SerializeField] private NavMeshCharacter _character;
     [SerializeField] private GameObject _targetMarkerPrefab;
     [SerializeField] private GameObject _deathTextPrefab;
     [SerializeField] private Slider _slider;
-    [SerializeField] private TMP_Text _infoText;
     [SerializeField] private SkinnedMeshRenderer _bodyRenderer;
     [SerializeField] private MeshRenderer _hatRenderer;
+    [SerializeField] private Soundbank _soundbank;
 
-    [SerializeField] private AudioSource _heroAudioSource;
-    [SerializeField] private AudioClip[] _footstepsArray;
-    [SerializeField] private AudioClip _jumpSound;
-    [SerializeField] private AudioClip _hitSound;
-    [SerializeField] private AudioClip _injuredSound;
-    [SerializeField] private AudioClip _healedSound;
-    [SerializeField] private AudioClip _deadSound;
-
-    private bool _isFootstepPlaying = false;
-    private bool _isJumpSoundPlayed = false;
-    private bool _isCharacterInjured = false;
-    private bool _isOnDeathEffectTriggered = false;
-
-    private Coroutine _currentFootstepCoroutine;
-    private GameObject _currentTargetMarker;
+    [SerializeField] private float _minDistanceToFlag = 0.5f;
+    [SerializeField] private float _deathTextYoffset = 5f;
 
     private void Update()
     {
         DetectAnimLayersChange();
 
         ShowHP();
-        ShowSoundLevels();
+        
         ShowJumping();
 
         if (_character.InDeathProcess(out float elapsedTime))
@@ -66,28 +51,16 @@ public class NavMeshCharacterView : MonoBehaviour
         DisableMarkerBasedOnProximity();
 
         if (_character.CurrentVelocity.magnitude > 0.05f)
-        {
             StartRunning();
-            SoundFootsteps();
-        }
         else
-        {
             StopRunning();
-        }
 
-        SoundJump();
     }
 
     private void SetFloatFor(SkinnedMeshRenderer bodyRenderer, MeshRenderer hatRenderer, string key, float param)
     { 
         bodyRenderer.material.SetFloat(key, param);
         hatRenderer.material.SetFloat(key, param);
-    }
-
-    private void ShowSoundLevels()
-    {
-        _infoText.text = "Music : " + (_character.MusicEnabled ? "ON" : "OFF") +
-            "\nSFX : " + (_character.SFXEnabled ? "ON" : "OFF");
     }
 
     private void DetectAnimLayersChange()
@@ -107,12 +80,12 @@ public class NavMeshCharacterView : MonoBehaviour
         if (isInjured)
         {
             _animator.SetLayerWeight(injuredLayerIndex, AnimLayerWeightMax);
-            _heroAudioSource.PlayOneShot(_injuredSound);
+            _soundbank.PlayInjuredSound();
         }
         else
         {
             _animator.SetLayerWeight(injuredLayerIndex, AnimLayerWeightMin);
-            _heroAudioSource.PlayOneShot(_healedSound);
+            _soundbank.PlayHealedSound();
         }
     }
 
@@ -130,54 +103,13 @@ public class NavMeshCharacterView : MonoBehaviour
     private void StopRunning()
     {
         _animator.SetBool(IsRunningKey, false);
-        _isFootstepPlaying = false;
+        _soundbank.SetFootstepsPlaying(false);
     }
 
     private void StartRunning()
     {
         _animator.SetBool(IsRunningKey, true);
-        _isFootstepPlaying = true;
-    }
-
-    private void SoundFootsteps()
-    {
-        if (_character.InJumpProcess)
-            _isFootstepPlaying = false;
-
-        if (_isFootstepPlaying && _currentFootstepCoroutine == null)
-            _currentFootstepCoroutine = StartCoroutine(ProcessFootsteps());
-    }
-
-    private void SoundJump()
-    {
-        if (_isJumpSoundPlayed == false && _character.InJumpProcess)
-        {
-            _heroAudioSource.volume = _jumpVolume;
-            _heroAudioSource.PlayOneShot(_jumpSound);
-            _isJumpSoundPlayed = true;
-        }
-        else if (_character.InJumpProcess == false)
-        {
-            _isJumpSoundPlayed = false;
-        }
-    }
-
-    private void PlayRandomFootstep()
-    {
-        _heroAudioSource.volume = _footstepVolume;
-        _heroAudioSource.PlayOneShot(_footstepsArray[Random.Range(0, _footstepsArray.Length)]);
-    }
-
-    private IEnumerator ProcessFootsteps()
-    {
-        while (_isFootstepPlaying)
-        {
-            PlayRandomFootstep();
-
-            yield return new WaitForSeconds(_footstepRate);
-        }
-
-        _currentFootstepCoroutine = null;
+        _soundbank.SetFootstepsPlaying(true);
     }
 
     private void DrawMarkerAtCurrentTarget()
@@ -207,7 +139,7 @@ public class NavMeshCharacterView : MonoBehaviour
         if (_isOnDeathEffectTriggered == false)
         {
             Instantiate(_deathTextPrefab, transform.position + Vector3.up * _deathTextYoffset, Quaternion.identity);
-            _heroAudioSource.PlayOneShot(_deadSound);
+            _soundbank.PlayDeadSound();
 
             _isOnDeathEffectTriggered = true;
         }
@@ -216,9 +148,8 @@ public class NavMeshCharacterView : MonoBehaviour
     public void AnimateHit()
     {
         _animator.SetTrigger(TakeDamageTriggerKey);
-        _heroAudioSource.PlayOneShot(_hitSound);
+        _soundbank.PlayHitSound();
     }
-
 
     public void DestroyVisual()
     {
