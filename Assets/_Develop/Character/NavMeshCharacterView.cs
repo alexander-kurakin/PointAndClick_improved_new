@@ -98,6 +98,7 @@ public class NavMeshCharacterView : MonoBehaviour
     private void ShowJumping()
     { 
         _animator.SetBool(InJumpProcessKey, _character.InJumpProcess);
+        _soundbank.SetCharacterJumpState(_character.InJumpProcess);
     }
 
     private void StopRunning()

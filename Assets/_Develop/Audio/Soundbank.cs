@@ -7,9 +7,9 @@ public class Soundbank : MonoBehaviour
 
     private bool _isFootstepPlaying = false;
     private bool _isJumpSoundPlayed = false;
+    private bool _isCharacterInJumpProcess = false;
 
     [SerializeField] private AudioSource _audioSource;
-    [SerializeField] private NavMeshCharacter _character;
 
     [SerializeField] private AudioClip[] _footstepsArray;
     [SerializeField] private AudioClip _jumpSound;
@@ -29,13 +29,13 @@ public class Soundbank : MonoBehaviour
 
     private void AudioForJumps()
     {
-        if (_isJumpSoundPlayed == false && _character.InJumpProcess)
+        if (_isJumpSoundPlayed == false && _isCharacterInJumpProcess)
         {
             _audioSource.volume = _jumpVolume;
             _audioSource.PlayOneShot(_jumpSound);
             _isJumpSoundPlayed = true;
         }
-        else if (_character.InJumpProcess == false)
+        else if (_isCharacterInJumpProcess == false)
         {
             _isJumpSoundPlayed = false;
         }
@@ -43,7 +43,7 @@ public class Soundbank : MonoBehaviour
 
     private void AudioForFootsteps()
     {
-        if (_character.InJumpProcess)
+        if (_isCharacterInJumpProcess)
             _isFootstepPlaying = false;
 
         if (_isFootstepPlaying && _currentFootstepCoroutine == null)
@@ -73,6 +73,11 @@ public class Soundbank : MonoBehaviour
             _isFootstepPlaying = true;
         else
             _isFootstepPlaying = false;
+    }
+
+    public void SetCharacterJumpState(bool isInJumpProcess)
+    {
+        _isCharacterInJumpProcess = isInJumpProcess;
     }
 
     public void PlayHitSound()
